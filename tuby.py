@@ -1,10 +1,12 @@
-import threading
+from threading import Thread
 import subprocess
 import os
 from tkinter import *
+from tkinter import messagebox
 from pytube import YouTube
 import youtubeQuery
 import sys
+from pydub import AudioSegment
 
 #def getAudioDownload(src):
 #    src = youtubeQuery.search(src)
@@ -19,11 +21,14 @@ def getVideoDownload(src):
     src = YouTube(src)
     print('Downloading...')
     src.streams.filter(only_audio=True).first().download(DOWNLOAD_FOLDER)
+
     print('Download Finished...')
+    searchEntry.delete(0, 'end')
 
 
 DOWNLOAD_FOLDER = 'downloads/'
 RESULT = 'http://youtube.com/watch?v=9bZkp7q19f0'
+placeholder_text = 'search...'
 
 
 root = Tk()
@@ -48,12 +53,19 @@ searchEntry.pack(fill=X, padx=(10,10), pady=(10,10))
 
 
 def getAudioDownload(src):
+    downloadSuccess(str(src))
     src = youtubeQuery.search(src)
     src = YouTube(src)
     print('Downloading...')
     src.streams.filter(only_audio=True).first().download(DOWNLOAD_FOLDER)
     print('Download Finished...')
 
+
+
+def downloadSuccess(MEDIA):
+    searchEntry.delete(0, 'end')
+    messagebox.showinfo("Tuby", '"' + str(MEDIA) + '"' + ' is Downloading!')
+    searchEntry.insert(0, placeholder_text)
 
 def openFolder():
      cwd = os.getcwd()
@@ -73,16 +85,26 @@ downloadAudio = Button(root, borderwidth="0", bg="#548235", fg="white", font="He
 downloadVideo = Button(root, borderwidth="0", bg="#2F5597", fg="white", font="Helvetica 13 bold", text="Video", command=(lambda: getVideoDownload(userSearch.get())))
 openFolderButton = Button(root, borderwidth="0", bg="#C3C3C3", text="Open", command=(lambda: openFolder()))
 writeToDiskButton = Button(root, borderwidth="0", bg="#C3C3C3", text="Write", command=(lambda: getVideoDownload(userSearch.get())))
+status = Label(root, text="Tuby // Created by Robert Carroll", bg="#DADADA", font="Helvetica 7", fg="grey", anchor=W)
 
 #getAudioThread = getAudioDownload(name=userSearch.get())
 #getAudioThread.start()
 
 downloadAudio.pack(fill=X, padx=(10,10))
 downloadVideo.pack(fill=X, padx=(10,10))
-openFolderButton.pack(fill=X, side=LEFT, padx=(10,5), pady=(10,10))
-writeToDiskButton.pack(fill=X, side=LEFT, padx=(5,10), pady=(10,10))
+openFolderButton.pack(fill=X, padx=(10,5), pady=(10,10))
+writeToDiskButton.pack(fill=X, padx=(5,10), pady=(10,10))
+status.pack(side=BOTTOM, fill=X)
 
+def clear_entry(event, searchEntry):
+    searchEntry.delete(0, END)
+
+searchEntry.bind("<Button-1>", lambda event: clear_entry(event, searchEntry))
+
+searchEntry.insert(0, placeholder_text)
 root.mainloop()
+
+
 
 
 
