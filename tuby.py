@@ -7,15 +7,16 @@ from pytube import YouTube
 import youtubeQuery
 import sys
 import shutil
+import ffmpy
 
 #This is a huge mess that needs to be cleaned up btw
 #will get to it """eventually"""(tm)
 
 DOWNLOAD_FOLDER = 'downloads/'
-TEMP_FOLDER = 'downloads/_tmp'
+TEMP_FOLDER = 'downloads/_tmp/'
 FFMPEG_LOC = 'C:/Program Files/FFMPEG/ffmpeg.exe'
-RESULT = 'http://youtube.com/watch?v=9bZkp7q19f0'
-placeholder_text = 'search...'
+placeholder_text = 'search or paste link'
+
 
 def getVideoDownload(src):
     src = youtubeQuery.search(src)
@@ -58,22 +59,42 @@ def FFMPEGCheck():
         print("C:/Program Files/FFMPEG/ffmpeg.exe")
         messagebox.askyesno("Tuby", '"' + str(FFMPEG_LOC) + '"' + ' not found! FFMPEG is required for .mp3 downloads. Do you wish to download FFMPEG?')
 
-def startAudioDownload():
-    getAudioThread = threading.Thread(target=lambda: getAudioDownload((userSearch.get())))
+def convertStream(file, target):
+
+#    ff = ffmpy.FFmpeg(inputs={str(dir) + str(file) + '.mp4': None}, outputs={str(file) + str(target): None})
+#    ff.run()
+
+    ff = ffmpy.FFmpeg(
+        inputs={str(TEMP_FOLDER) + str(file) + '.mp4': None},
+        outputs={str(DOWNLOAD_FOLDER) + str(file) + str(target): None}
+        )
+    ff.run()
+
+
+def startAudioDownload(format):
+    getAudioThread = threading.Thread(target=lambda: getAudioDownload(userSearch.get(), format))
     getAudioThread.start()
 
 def startVideoDownload():
     getVideoThread = threading.Thread(target=lambda: getVideoDownload((userSearch.get())))
     getVideoThread.start()
 
-def getAudioDownload(src):
+def getAudioDownload(src, format):
     downloadSuccess(str(src))
     src = youtubeQuery.search(src)
     src = YouTube(src)
-    print('Downloading...')
-    src.streams.filter(only_audio=True).first().download(DOWNLOAD_FOLDER)
-    print('Download Finished...')
-
+    print('Downloading ' + str(src.title))
+    if format is not 'default':
+        try:
+            os.makedirs(TEMP_FOLDER)
+        except:
+            print('Temp folder already exists')
+        src.streams.filter(subtype='mp4').first().download(TEMP_FOLDER)
+        convertStream(str(src.title), '.mp3')
+        print('Download ' + str(src.title) + 'Finished...')
+    else:
+        src.streams.filter(only_audio=True).first().download(DOWNLOAD_FOLDER)
+        print('Download ' + str(src.title) + 'Finished...')
 
 
 def downloadSuccess(MEDIA):
@@ -100,7 +121,7 @@ def listResults(src):
 
 downloadVideo = Button(root, borderwidth="0", bg="#D82523", fg="white", font="Helvetica 13 bold", text="Download Video", command=(lambda: startVideoDownload()))
 downloadVideo.grid(row=2, column=0, columnspan=2, sticky="new")
-downloadAudio = Button(root, borderwidth="0", bg="#B11F1D", fg="white", font="Helvetica 13 bold", text="Download Audio", command=(lambda: startAudioDownload()))
+downloadAudio = Button(root, borderwidth="0", bg="#B11F1D", fg="white", font="Helvetica 13 bold", text="Download Audio", command=(lambda: startAudioDownload('.mp3')))
 downloadAudio.grid(row=3, column=0, columnspan=2, sticky="new")
 openFolderButton = Button(root, borderwidth="0", bg="#C3C3C3", text="Open", font="Helvetica 13 bold", command=(lambda: openFolder()))
 openFolderButton.grid(row=5, column=0, sticky="nsew", pady=(10,10), padx=(10,5), rowspan=2)
@@ -127,14 +148,13 @@ def clear_temp():
     try:
         shutil.rmtree(TEMP_FOLDER)
     except:
-        print("Error:")
+        print("Error while deleting temp folder")
 
 def create_downloads():
     try:
         os.makedirs(DOWNLOAD_FOLDER)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
+    except:
+        print('Download Folder already exists')
 
 create_downloads()
 
