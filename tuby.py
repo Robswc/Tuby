@@ -15,7 +15,7 @@ import ffmpy
 DOWNLOAD_FOLDER = 'downloads/'
 TEMP_FOLDER = 'downloads/_tmp/'
 FFMPEG_LOC = 'C:/Program Files/FFMPEG/ffmpeg.exe'
-placeholder_text = 'search or paste link'
+placeholder_text = 'title or link'
 
 
 def getVideoDownload(src):
@@ -30,8 +30,8 @@ def getVideoDownload(src):
 root = Tk()
 root.title("Tuby")
 root.geometry("360x360+0+0")
-root.minsize(width=360, height=360)
-root.maxsize(width=900, height=360)
+root.minsize(width=360, height=325)
+root.maxsize(width=900, height=325)
 #root.iconbitmap("icon.ico")
 root.configure(background='#DADADA')
 
@@ -141,8 +141,48 @@ def clear_entry(event, searchEntry):
     searchEntry.delete(0, END)
 
 searchEntry.bind("<Button-1>", lambda event: clear_entry(event, searchEntry))
-
 searchEntry.insert(0, placeholder_text)
+
+VIDEO_OUTPUT = '.mp4'
+VIDEO_OUTPUT = '720'
+
+def setOutput(OUTPUT):
+    print('Output set to ' + str(OUTPUT))
+    global VIDEO_OUTPUT
+    VIDEO_OUTPUT = str(OUTPUT)
+
+def setDims(DIMS):
+    print('Output set to ' + str(DIMS))
+    global VIDEO_DIMS
+    VIDEO_DIMS = str(DIMS)
+
+
+
+menu = Menu(root)
+root.config(menu=menu)
+
+subMenu = Menu(menu)
+menu.add_cascade(label="Video", menu=subMenu)
+subMenu.add_command(label=".mp4", command=setOutput('.mp4'))
+subMenu.add_command(label=".avi", command=setOutput('.avi'))
+subMenu.add_command(label=".mov", command=setOutput('.mov'))
+subMenu.add_command(label=".wmv", command=setOutput('.wmv'))
+subMenu.add_separator()
+subMenu.add_command(label="1080p", command=setDims('1080p'))
+subMenu.add_command(label="720p", command=setDims('720p'))
+subMenu.add_command(label="480p", command=setDims('480p'))
+audioMenu = Menu(menu)
+menu.add_cascade(label="Audio", menu=audioMenu)
+audioMenu.add_command(label=".mp4", command=setOutput('.mp4'))
+audioMenu.add_command(label=".mp3", command=setOutput('.mp3'))
+audioMenu.add_command(label=".wav", command=setOutput('.wav'))
+audioMenu.add_command(label=".ogg", command=setOutput('.ogg'))
+audioMenu.add_separator()
+audioMenu.add_command(label="128kbps", command=setOutput('128kbps'))
+audioMenu.add_command(label="64kbps", command=setOutput('64kbps'))
+
+
+
 
 def clear_temp():
     try:
