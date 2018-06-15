@@ -16,16 +16,26 @@ DOWNLOAD_FOLDER = 'downloads/'
 TEMP_FOLDER = 'downloads/_tmp/'
 FFMPEG_LOC = 'C:/Program Files/FFMPEG/ffmpeg.exe'
 placeholder_text = 'title or link'
+VIDEO_OUTPUT = '.mp4'
+VIDEO_DIMS = '720p'
+OPTIONS = {'format': '.mp4', 'dimensions': '720p'}
 
 
 def getVideoDownload(src):
     src = youtubeQuery.search(src)
     src = YouTube(src)
     print('Downloading...')
-    src.streams.filter(subtype='mp4').first().download(DOWNLOAD_FOLDER)
-
-    print('Download Finished...')
-    searchEntry.delete(0, 'end')
+    if format is not 'default':
+        try:
+            os.makedirs(TEMP_FOLDER)
+        except:
+            print('Temp folder already exists')
+        src.streams.filter(subtype='mp4').first().download(TEMP_FOLDER)
+        convertStream(str(src.title), str(VIDEO_OUTPUT))
+        print('Download ' + str(src.title) + 'Finished...')
+    else:
+        src.streams.filter(only_audio=True).first().download(DOWNLOAD_FOLDER)
+        print('Download ' + str(src.title) + 'Finished...')
 
 root = Tk()
 root.title("Tuby")
@@ -60,9 +70,6 @@ def FFMPEGCheck():
         messagebox.askyesno("Tuby", '"' + str(FFMPEG_LOC) + '"' + ' not found! FFMPEG is required for .mp3 downloads. Do you wish to download FFMPEG?')
 
 def convertStream(file, target):
-
-#    ff = ffmpy.FFmpeg(inputs={str(dir) + str(file) + '.mp4': None}, outputs={str(file) + str(target): None})
-#    ff.run()
 
     ff = ffmpy.FFmpeg(
         inputs={str(TEMP_FOLDER) + str(file) + '.mp4': None},
@@ -140,22 +147,32 @@ writeToDiskButton.grid(row=5, column=1, sticky="nsew", pady=(10,10), padx=(5,10)
 def clear_entry(event, searchEntry):
     searchEntry.delete(0, END)
 
+def updateOptions():
+    listbox.delete(0, END)
+    global OPTIONS
+    for item in OPTIONS:
+        listbox.insert(END, '{}: {}'.format(item, OPTIONS[item]))
+
 searchEntry.bind("<Button-1>", lambda event: clear_entry(event, searchEntry))
 searchEntry.insert(0, placeholder_text)
 
-VIDEO_OUTPUT = '.mp4'
-VIDEO_OUTPUT = '720'
+
 
 def setOutput(OUTPUT):
-    print('Output set to ' + str(OUTPUT))
     global VIDEO_OUTPUT
+    global OPTIONS
     VIDEO_OUTPUT = str(OUTPUT)
+    OPTIONS['format'] = str(OUTPUT)
+    updateOptions()
+
+
 
 def setDims(DIMS):
-    print('Output set to ' + str(DIMS))
     global VIDEO_DIMS
+    global OPTIONS
     VIDEO_DIMS = str(DIMS)
-
+    OPTIONS['dimensions'] = str(DIMS)
+    updateOptions()
 
 
 menu = Menu(root)
@@ -163,23 +180,23 @@ root.config(menu=menu)
 
 subMenu = Menu(menu)
 menu.add_cascade(label="Video", menu=subMenu)
-subMenu.add_command(label=".mp4", command=setOutput('.mp4'))
-subMenu.add_command(label=".avi", command=setOutput('.avi'))
-subMenu.add_command(label=".mov", command=setOutput('.mov'))
-subMenu.add_command(label=".wmv", command=setOutput('.wmv'))
+subMenu.add_command(label=".mp4", command=(lambda: setOutput('.mp4')))
+subMenu.add_command(label=".avi", command=(lambda: setOutput('.avi')))
+subMenu.add_command(label=".mov", command=(lambda: setOutput('.mov')))
+subMenu.add_command(label=".wmv", command=(lambda: setOutput('.wmv')))
 subMenu.add_separator()
-subMenu.add_command(label="1080p", command=setDims('1080p'))
-subMenu.add_command(label="720p", command=setDims('720p'))
-subMenu.add_command(label="480p", command=setDims('480p'))
+subMenu.add_command(label="1080p", command=(lambda: setDims('1080p')))
+subMenu.add_command(label="720p", command=(lambda: setDims('720p')))
+subMenu.add_command(label="480p", command=(lambda: setDims('480p')))
 audioMenu = Menu(menu)
 menu.add_cascade(label="Audio", menu=audioMenu)
-audioMenu.add_command(label=".mp4", command=setOutput('.mp4'))
-audioMenu.add_command(label=".mp3", command=setOutput('.mp3'))
-audioMenu.add_command(label=".wav", command=setOutput('.wav'))
-audioMenu.add_command(label=".ogg", command=setOutput('.ogg'))
+audioMenu.add_command(label=".mp4", command=(lambda: setOutput('.mp4')))
+audioMenu.add_command(label=".mp3", command=(lambda: setOutput('.mp3')))
+audioMenu.add_command(label=".wav", command=(lambda: setOutput('.wav')))
+audioMenu.add_command(label=".ogg", command=(lambda: setOutput('.ogg')))
 audioMenu.add_separator()
-audioMenu.add_command(label="128kbps", command=setOutput('128kbps'))
-audioMenu.add_command(label="64kbps", command=setOutput('64kbps'))
+audioMenu.add_command(label="128kbps", command=(lambda: setOutput('128kbps')))
+audioMenu.add_command(label="64kbps", command=(lambda: setOutput('64kbps')))
 
 
 
@@ -196,7 +213,14 @@ def create_downloads():
     except:
         print('Download Folder already exists')
 
+
+
 create_downloads()
+
+#updateOptionsThread = threading.Thread(target=lambda: updateOptions())
+#updateOptionsThread.start()
+
+updateOptions()
 
 root.mainloop()
 
