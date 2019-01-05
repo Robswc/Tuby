@@ -63,8 +63,8 @@ searchEntry.grid(row=0, column=0, columnspan=2, ipadx=10, sticky="new", pady=(10
 #        print('Download Finished...')
 #
 def FFMPEGCheck():
-    if os.path.isfile('C:/Program Files/FFMPEG/ffmpeg.exe'):
-        print("True")
+    if os.path.isfile(str(FFMPEG_LOC)):
+        print("FFMPEG Found!")
     else:
         print("C:/Program Files/FFMPEG/ffmpeg.exe")
         messagebox.askyesno("Tuby", '"' + str(FFMPEG_LOC) + '"' + ' not found! FFMPEG is required for .mp3 downloads. Do you wish to download FFMPEG?')
@@ -125,15 +125,14 @@ def listResults(src):
     for item in youtubeQuery.getResults(src):
         listbox.insert(END, item)
 
-
 downloadVideo = Button(root, borderwidth="0", bg="#D82523", fg="white", font="Helvetica 13 bold", text="Download Video", command=(lambda: startVideoDownload()))
 downloadVideo.grid(row=2, column=0, columnspan=2, sticky="new")
 downloadAudio = Button(root, borderwidth="0", bg="#B11F1D", fg="white", font="Helvetica 13 bold", text="Download Audio", command=(lambda: startAudioDownload('.mp3')))
 downloadAudio.grid(row=3, column=0, columnspan=2, sticky="new")
 openFolderButton = Button(root, borderwidth="0", bg="#C3C3C3", text="Open", font="Helvetica 13 bold", command=(lambda: openFolder()))
-openFolderButton.grid(row=5, column=0, sticky="nsew", pady=(10,10), padx=(10,5), rowspan=2)
+openFolderButton.grid(row=5, column=0, sticky="nsew", pady=(10, 10), padx=(10, 5), rowspan=2)
 writeToDiskButton = Button(root, borderwidth="0", bg="#C3C3C3", text="Write", font="Helvetica 13 bold", command=(lambda: writeToDisk()))
-writeToDiskButton.grid(row=5, column=1, sticky="nsew", pady=(10,10), padx=(5,10), rowspan=2)
+writeToDiskButton.grid(row=5, column=1, sticky="nsew", pady=(10, 10), padx=(5, 10), rowspan=2)
 
 #getAudioThread = getAudioDownload(name=userSearch.get())
 #getAudioThread.start()
@@ -156,8 +155,6 @@ def updateOptions():
 searchEntry.bind("<Button-1>", lambda event: clear_entry(event, searchEntry))
 searchEntry.insert(0, placeholder_text)
 
-
-
 def setOutput(OUTPUT):
     global VIDEO_OUTPUT
     global OPTIONS
@@ -165,15 +162,12 @@ def setOutput(OUTPUT):
     OPTIONS['format'] = str(OUTPUT)
     updateOptions()
 
-
-
 def setDims(DIMS):
     global VIDEO_DIMS
     global OPTIONS
     VIDEO_DIMS = str(DIMS)
     OPTIONS['dimensions'] = str(DIMS)
     updateOptions()
-
 
 menu = Menu(root)
 root.config(menu=menu)
@@ -213,18 +207,11 @@ def create_downloads():
     except:
         print('Download Folder already exists')
 
-
-
 create_downloads()
 
 #updateOptionsThread = threading.Thread(target=lambda: updateOptions())
 #updateOptionsThread.start()
 
 updateOptions()
-
 root.mainloop()
-
 clear_temp()
-
-
-
