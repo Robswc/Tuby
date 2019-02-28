@@ -9,11 +9,12 @@ import sys
 import shutil
 import ffmpy
 
-#This is a huge mess that needs to be cleaned up btw
-#will get to it """eventually"""(tm)
+# This is a huge mess that needs to be cleaned up btw
+# will get to it """eventually"""(tm)
 
 DOWNLOAD_FOLDER = 'downloads/'
 TEMP_FOLDER = 'downloads/_tmp/'
+# Where ffmpeg exists
 FFMPEG_LOC = 'C:/Program Files/FFMPEG/ffmpeg.exe'
 placeholder_text = 'title or link'
 VIDEO_OUTPUT = '.mp4'
@@ -21,6 +22,7 @@ VIDEO_DIMS = '720p'
 OPTIONS = {'format': '.mp4', 'dimensions': '720p'}
 
 
+# get video download
 def getVideoDownload(src):
     src = youtubeQuery.search(src)
     src = YouTube(src)
@@ -69,6 +71,7 @@ def FFMPEGCheck():
         print("C:/Program Files/FFMPEG/ffmpeg.exe")
         messagebox.askyesno("Tuby", '"' + str(FFMPEG_LOC) + '"' + ' not found! FFMPEG is required for .mp3 downloads. Do you wish to download FFMPEG?')
 
+
 def convertStream(file, target):
 
     ff = ffmpy.FFmpeg(
@@ -82,9 +85,11 @@ def startAudioDownload(format):
     getAudioThread = threading.Thread(target=lambda: getAudioDownload(userSearch.get(), format))
     getAudioThread.start()
 
+
 def startVideoDownload():
     getVideoThread = threading.Thread(target=lambda: getVideoDownload((userSearch.get())))
     getVideoThread.start()
+
 
 def getAudioDownload(src, format):
     downloadSuccess(str(src))
@@ -109,11 +114,13 @@ def downloadSuccess(MEDIA):
     messagebox.showinfo("Tuby", '"' + str(MEDIA) + '"' + ' is Downloading!')
     searchEntry.insert(0, placeholder_text)
 
+
 def openFolder():
      cwd = os.getcwd()
      cwd = str(cwd + "\downloads")
      subprocess.Popen('explorer ' + str(cwd))
      print("Opening..." + str(cwd))
+
 
 def writeToDisk():
     messagebox.showinfo("Tuby", 'Not yet available :( Write to Disk feature coming soon!')
@@ -121,6 +128,8 @@ def writeToDisk():
 
 listbox = Listbox(root, bg="#C3C3C3", borderwidth="0", font="Helvetica 9 bold")
 listbox.grid(row=1, column=0, columnspan=2, sticky="new")
+
+
 def listResults(src):
     for item in youtubeQuery.getResults(src):
         listbox.insert(END, item)
@@ -135,17 +144,18 @@ openFolderButton.grid(row=5, column=0, sticky="nsew", pady=(10,10), padx=(10,5),
 writeToDiskButton = Button(root, borderwidth="0", bg="#C3C3C3", text="Write", font="Helvetica 13 bold", command=(lambda: writeToDisk()))
 writeToDiskButton.grid(row=5, column=1, sticky="nsew", pady=(10,10), padx=(5,10), rowspan=2)
 
-#getAudioThread = getAudioDownload(name=userSearch.get())
-#getAudioThread.start()
+# getAudioThread = getAudioDownload(name=userSearch.get())
+# getAudioThread.start()
 
 
-#statusframe = Frame(root)
-#statusframe.pack(side=BOTTOM, fill=X)
-#status = Label(statusframe, text="Tuby // Created by Robert Carroll", bg="#DADADA", font="Helvetica 7", fg="grey", anchor=W)
-#status.pack(side=BOTTOM, expand=True)
+# statusframe = Frame(root)
+# statusframe.pack(side=BOTTOM, fill=X)
+# status = Label(statusframe, text="Tuby // Created by Robert Carroll", bg="#DADADA", font="Helvetica 7", fg="grey", anchor=W)
+# status.pack(side=BOTTOM, expand=True)
 
 def clear_entry(event, searchEntry):
     searchEntry.delete(0, END)
+
 
 def updateOptions():
     listbox.delete(0, END)
@@ -157,14 +167,12 @@ searchEntry.bind("<Button-1>", lambda event: clear_entry(event, searchEntry))
 searchEntry.insert(0, placeholder_text)
 
 
-
 def setOutput(OUTPUT):
     global VIDEO_OUTPUT
     global OPTIONS
     VIDEO_OUTPUT = str(OUTPUT)
     OPTIONS['format'] = str(OUTPUT)
     updateOptions()
-
 
 
 def setDims(DIMS):
@@ -178,6 +186,7 @@ def setDims(DIMS):
 menu = Menu(root)
 root.config(menu=menu)
 
+# Menu Stuff
 subMenu = Menu(menu)
 menu.add_cascade(label="Video", menu=subMenu)
 subMenu.add_command(label=".mp4", command=(lambda: setOutput('.mp4')))
@@ -199,13 +208,12 @@ audioMenu.add_command(label="128kbps", command=(lambda: setOutput('128kbps')))
 audioMenu.add_command(label="64kbps", command=(lambda: setOutput('64kbps')))
 
 
-
-
 def clear_temp():
     try:
         shutil.rmtree(TEMP_FOLDER)
     except:
         print("Error while deleting temp folder")
+
 
 def create_downloads():
     try:
@@ -214,11 +222,10 @@ def create_downloads():
         print('Download Folder already exists')
 
 
-
 create_downloads()
 
-#updateOptionsThread = threading.Thread(target=lambda: updateOptions())
-#updateOptionsThread.start()
+# updateOptionsThread = threading.Thread(target=lambda: updateOptions())
+# updateOptionsThread.start()
 
 updateOptions()
 
