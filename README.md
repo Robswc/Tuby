@@ -3,7 +3,7 @@
 An open source, lightweight YouTube video downloader!
 
 ### The compiled application can be found here!
-https://github.com/Robswc/Tuby/blob/master/dist/tuby.exe (open in 'new tab' to download directly)
+https://github.com/Robswc/Tuby/blob/master/dist/tuby.exe
 
 ## How to Use
 
