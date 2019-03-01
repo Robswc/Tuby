@@ -1,5 +1,8 @@
-![Tuby](img/banner.gif?raw=true "Tuby")
+![](img/banner.gif)
 # Tuby
-a simple app created to help users download youtube videos efficiently
-The compiled application can be found here!
+An open source, lightweight YouTube video downloader!
+
+#The compiled application can be found here!
 https://github.com/Robswc/Tuby/blob/master/dist/tuby.exe
+
+#How to Use
