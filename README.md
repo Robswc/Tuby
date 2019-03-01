@@ -1,4 +1,4 @@
-![Tuby](tuby_UI.png?raw=true "Tuby")
+![Tuby](img/banner.gif?raw=true "Tuby")
 # Tuby
 a simple app created to help users download youtube videos efficiently
 The compiled application can be found here!
