@@ -1,3 +1,5 @@
+# This project currently is on hold until one of the dependencies (pytube) is able to fix fatal errors! Really sorry :(
+
 ![](img/banner.gif)
 # Tuby
 An open source, lightweight YouTube video downloader!
